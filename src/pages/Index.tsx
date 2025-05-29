@@ -11,37 +11,29 @@ import Awards from '@/components/Awards';
 import Contact from '@/components/Contact';
 import AIGuide from '@/components/AIGuide';
 import AIAssistant from '@/components/AIAssistant';
-import { Bot } from 'lucide-react';
+import InteractiveBackground from '@/components/InteractiveBackground';
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
       <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       
-      {/* AI Assistant Toggle Button */}
-      <div className="fixed top-24 right-6 z-40">
-        <button
-          onClick={() => {
-            // This will be handled by the AIAssistant component
-            console.log('Toggle AI Assistant');
-          }}
-          className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 rounded-full p-3 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-cyan-400/25"
-        >
-          <Bot className="w-5 h-5 text-cyan-400" />
-        </button>
-      </div>
+      {/* Interactive Background for all sections */}
+      <InteractiveBackground />
 
-      <main className="relative">
+      <main className="relative z-10">
         <Hero />
-        <ResearchImpact />
-        <About />
-        <Experience />
-        <Projects />
-        <Publications />
-        <Awards />
-        <Contact />
+        <div className="relative">
+          <ResearchImpact />
+          <About />
+          <Experience />
+          <Projects />
+          <Publications />
+          <Awards />
+          <Contact />
+        </div>
       </main>
       <AIGuide />
       <AIAssistant />
