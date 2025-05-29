@@ -54,13 +54,6 @@ const Hero = () => {
 
         {/* Quick Action Buttons */}
         <div className="flex flex-wrap justify-center gap-4 mb-16 animate-slide-up delay-400">
-          <button
-            onClick={() => setShowAIChat(true)}
-            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-semibold shadow-lg hover:shadow-cyan-500/25 flex items-center gap-2"
-          >
-            <Bot className="w-5 h-5" />
-            Chat with Sam's AI
-          </button>
           <a
             href="#research-impact"
             className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-semibold shadow-lg hover:shadow-cyan-500/25"
