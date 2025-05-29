@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Github, Linkedin, Scholar } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Github, Linkedin, GraduationCap } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const Contact = () => {
@@ -104,7 +104,7 @@ const Contact = () => {
                     href="#"
                     className="p-3 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full hover:scale-110 transition-transform duration-200"
                   >
-                    <Scholar className="w-5 h-5 text-white" />
+                    <GraduationCap className="w-5 h-5 text-white" />
                   </a>
                 </div>
               </div>
