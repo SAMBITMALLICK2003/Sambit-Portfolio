@@ -8,7 +8,7 @@ import Projects from '@/components/Projects';
 import Publications from '@/components/Publications';
 import Awards from '@/components/Awards';
 import Contact from '@/components/Contact';
-import AIAssistant from '@/components/AIAssistant';
+import AIGuide from '@/components/AIGuide';
 import { Menu, X } from 'lucide-react';
 
 const Index = () => {
@@ -26,7 +26,7 @@ const Index = () => {
         <Awards />
         <Contact />
       </main>
-      <AIAssistant />
+      <AIGuide />
     </div>
   );
 };
