@@ -1,17 +1,10 @@
 
 import { useState } from 'react';
 import { ChevronDown, Sparkles, Bot } from 'lucide-react';
-import SearchBar from './SearchBar';
 import AIAssistant from './AIAssistant';
-import AIQuestionSuggestions from './AIQuestionSuggestions';
 
 const Hero = () => {
   const [showAIChat, setShowAIChat] = useState(false);
-
-  const handleSearch = (query: string) => {
-    console.log('Search query:', query);
-    setShowAIChat(true);
-  };
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
@@ -59,24 +52,15 @@ const Hero = () => {
           From lunar crater detection at ISRO to quantum-classical ensemble methods.
         </p>
 
-        {/* AI-Powered Search */}
-        <div className="mb-8 animate-slide-up delay-400">
-          <div className="mb-4">
-            <h3 className="text-lg text-white font-semibold mb-2">
-              🤖 Ask Sam's AI Assistant Anything
-            </h3>
-            <p className="text-gray-400 text-sm">
-              Powered by AI • Trained on Sambit's work & achievements
-            </p>
-          </div>
-          <SearchBar onSearch={handleSearch} />
-        </div>
-
-        {/* AI Question Suggestions */}
-        <AIQuestionSuggestions onQuestionSelect={handleSearch} />
-
         {/* Quick Action Buttons */}
-        <div className="flex flex-wrap justify-center gap-4 mb-16 animate-slide-up delay-500">
+        <div className="flex flex-wrap justify-center gap-4 mb-16 animate-slide-up delay-400">
+          <button
+            onClick={() => setShowAIChat(true)}
+            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-semibold shadow-lg hover:shadow-cyan-500/25 flex items-center gap-2"
+          >
+            <Bot className="w-5 h-5" />
+            Chat with Sam's AI
+          </button>
           <a
             href="#research-impact"
             className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-semibold shadow-lg hover:shadow-cyan-500/25"
