@@ -1,6 +1,5 @@
-
-import { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Bot, User, Settings, Key } from 'lucide-react';
+import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { MessageCircle, Send, X, Bot, User } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { GeminiService, getFallbackResponse } from '@/services/geminiService';
 
@@ -11,11 +10,21 @@ interface Message {
   timestamp: Date;
 }
 
-const AIAssistant = () => {
+export interface AIAssistantRef {
+  openChat: () => void;
+  sendMessage: (message: string) => void;
+}
+
+interface AIAssistantProps {
+  searchQuery?: string;
+  onSearchQueryProcessed?: () => void;
+}
+
+const AIAssistant = forwardRef<AIAssistantRef, AIAssistantProps>(({ 
+  searchQuery, 
+  onSearchQueryProcessed 
+}, ref) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [tempApiKey, setTempApiKey] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -29,6 +38,33 @@ const AIAssistant = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const geminiService = useRef<GeminiService | null>(null);
 
+  // Expose methods to parent components
+  useImperativeHandle(ref, () => ({
+    openChat: () => {
+      console.log('openChat called via ref');
+      setIsOpen(true);
+    },
+    sendMessage: (message: string) => {
+      console.log('sendMessage called via ref:', message);
+      if (message.trim()) {
+        setIsOpen(true);
+        setTimeout(() => handleSendMessage(message), 100);
+      }
+    }
+  }));
+
+  // Handle search queries from external components
+  useEffect(() => {
+    console.log('Search query effect triggered:', searchQuery);
+    if (searchQuery && searchQuery.trim()) {
+      setIsOpen(true);
+      setTimeout(() => {
+        handleSendMessage(searchQuery);
+        onSearchQueryProcessed?.();
+      }, 500);
+    }
+  }, [searchQuery, onSearchQueryProcessed]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -38,49 +74,38 @@ const AIAssistant = () => {
   }, [messages]);
 
   useEffect(() => {
-    // Load API key from localStorage
-    const savedApiKey = localStorage.getItem('gemini-api-key');
-    if (savedApiKey) {
-      setApiKey(savedApiKey);
-      geminiService.current = new GeminiService(savedApiKey);
+    // Initialize Gemini service
+    try {
+      geminiService.current = new GeminiService();
+      console.log('Gemini service initialized');
+    } catch (error) {
+      console.warn('Gemini service initialization failed:', error);
     }
   }, []);
 
-  const handleSaveApiKey = () => {
-    if (tempApiKey.trim()) {
-      setApiKey(tempApiKey);
-      localStorage.setItem('gemini-api-key', tempApiKey);
-      geminiService.current = new GeminiService(tempApiKey);
-      setShowSettings(false);
-      setTempApiKey('');
-      toast({
-        title: "API Key Saved",
-        description: "Gemini AI is now ready to assist you!",
-      });
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (messageText?: string) => {
+    const textToSend = messageText || inputMessage;
+    console.log('Sending message:', textToSend);
+    
+    if (!textToSend.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: inputMessage,
+      text: textToSend,
       isUser: true,
       timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
-    const currentInput = inputMessage;
-    setInputMessage('');
+    if (!messageText) setInputMessage('');
     setIsLoading(true);
 
     try {
       let responseText: string;
 
-      if (geminiService.current && apiKey) {
+      if (geminiService.current) {
         // Use Gemini API
-        const response = await geminiService.current.generateResponse(currentInput);
+        const response = await geminiService.current.generateResponse(textToSend);
         responseText = response.text;
         
         if (response.error) {
@@ -88,11 +113,7 @@ const AIAssistant = () => {
         }
       } else {
         // Use fallback responses
-        responseText = getFallbackResponse(currentInput);
-        
-        if (!apiKey) {
-          responseText += "\n\n💡 For enhanced AI responses, please set up your Gemini API key in the settings (⚙️ button).";
-        }
+        responseText = getFallbackResponse(textToSend);
       }
 
       const botMessage: Message = {
@@ -124,144 +145,142 @@ const AIAssistant = () => {
     }
   };
 
+  // Debug effect to log state changes
+  useEffect(() => {
+    console.log('AIAssistant isOpen:', isOpen);
+  }, [isOpen]);
+
   return (
     <>
-      {/* Chat Toggle Button */}
+      {/* Chat Toggle Button - Always visible for testing */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          console.log('Toggle button clicked, current isOpen:', isOpen);
+          setIsOpen(!isOpen);
+        }}
         className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform duration-200"
+        style={{ zIndex: 9999 }} // Ensure it's always on top
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
       </button>
 
-      {/* Chat Window */}
+      {/* Chat Overlay */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 w-96 h-96 bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-sm rounded-2xl border border-gray-700 shadow-2xl flex flex-col">
-          {/* Header */}
-          <div className="p-4 border-b border-gray-700 rounded-t-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mr-3">
-                  <Bot className="w-5 h-5 text-white" />
+        <div 
+          className="fixed inset-0 flex items-center justify-center p-4"
+          style={{ zIndex: 9998 }} // High z-index
+        >
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => {
+              console.log('Backdrop clicked, closing chat');
+              setIsOpen(false);
+            }}
+          ></div>
+          
+          {/* Chat Window */}
+          <div className="relative w-full max-w-2xl h-[600px] bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-sm rounded-2xl border border-gray-700 shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="p-4 border-b border-gray-700 rounded-t-2xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className="p-2 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mr-3">
+                    <Bot className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white">Sam's AI Assistant</h3>
+                    <p className="text-xs text-gray-400">Powered by Gemini AI</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold text-white">Sam's AI Assistant</h3>
-                  <p className="text-xs text-gray-400">
-                    {apiKey ? 'Powered by Gemini AI' : 'Basic mode - Add API key for full features'}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                <Settings className="w-4 h-4 text-gray-400 hover:text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Settings Panel */}
-          {showSettings && (
-            <div className="p-4 border-b border-gray-700 bg-slate-700/50">
-              <div className="space-y-3">
-                <div className="flex items-center text-sm text-white mb-2">
-                  <Key className="w-4 h-4 mr-2" />
-                  Gemini API Key
-                </div>
-                <input
-                  type="password"
-                  value={tempApiKey}
-                  onChange={(e) => setTempApiKey(e.target.value)}
-                  placeholder="Enter your Gemini API key"
-                  className="w-full px-3 py-2 bg-slate-600 border border-gray-500 rounded text-white text-sm focus:border-cyan-400 focus:outline-none"
-                />
                 <button
-                  onClick={handleSaveApiKey}
-                  disabled={!tempApiKey.trim()}
-                  className="w-full px-3 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded text-sm hover:scale-105 transition-transform disabled:opacity-50"
+                  onClick={() => {
+                    console.log('Header close button clicked');
+                    setIsOpen(false);
+                  }}
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
-                  Save API Key
+                  <X className="w-6 h-6" />
                 </button>
-                <p className="text-xs text-gray-400">
-                  Get your free API key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google AI Studio</a>
-                </p>
               </div>
             </div>
-          )}
 
-          {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className="flex items-start max-w-[80%]">
-                  {!message.isUser && (
+            {/* Messages */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className="flex items-start max-w-[80%]">
+                    {!message.isUser && (
+                      <div className="p-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mr-2 mt-1">
+                        <Bot className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                    <div
+                      className={`p-3 rounded-lg ${
+                        message.isUser
+                          ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
+                          : 'bg-slate-700/50 text-gray-100'
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-line">{message.text}</p>
+                    </div>
+                    {message.isUser && (
+                      <div className="p-1 bg-slate-600 rounded-full ml-2 mt-1">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="flex items-start max-w-[80%]">
                     <div className="p-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mr-2 mt-1">
                       <Bot className="w-4 h-4 text-white" />
                     </div>
-                  )}
-                  <div
-                    className={`p-3 rounded-lg ${
-                      message.isUser
-                        ? 'bg-gradient-to-r from-cyan-500 to-purple-500 text-white'
-                        : 'bg-slate-700/50 text-gray-100'
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-line">{message.text}</p>
-                  </div>
-                  {message.isUser && (
-                    <div className="p-1 bg-slate-600 rounded-full ml-2 mt-1">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            {isLoading && (
-              <div className="flex justify-start">
-                <div className="flex items-start max-w-[80%]">
-                  <div className="p-1 bg-gradient-to-r from-cyan-500 to-purple-500 rounded-full mr-2 mt-1">
-                    <Bot className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="p-3 rounded-lg bg-slate-700/50">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                    <div className="p-3 rounded-lg bg-slate-700/50">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-100"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-200"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-          {/* Input */}
-          <div className="p-4 border-t border-gray-700">
-            <div className="flex space-x-2">
-              <input
-                type="text"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask about Sambit's work..."
-                className="flex-1 px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none text-sm"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!inputMessage.trim() || isLoading}
-                className="p-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send className="w-4 h-4" />
-              </button>
+            {/* Input */}
+            <div className="p-4 border-t border-gray-700">
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Ask about Sambit's work..."
+                  className="flex-1 px-3 py-2 bg-slate-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-cyan-400 focus:outline-none text-sm"
+                />
+                <button
+                  onClick={() => handleSendMessage()}
+                  disabled={!inputMessage.trim() || isLoading}
+                  className="p-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
     </>
   );
-};
+});
+
+AIAssistant.displayName = 'AIAssistant';
 
 export default AIAssistant;

@@ -3,8 +3,8 @@ import { Brain, Award, Users, Rocket } from 'lucide-react';
 
 const About = () => {
   const stats = [
-    { icon: Brain, number: '5+', label: 'AI Research Projects' },
-    { icon: Award, number: '6+', label: 'Publications' },
+    { icon: Brain, number: '8+', label: 'AI Research Projects' },
+    { icon: Award, number: '5+', label: 'Publications' },
     { icon: Users, number: '3+', label: 'Research Internships' },
     { icon: Rocket, number: 'ISRO', label: 'Space Research' },
   ];
@@ -23,7 +23,7 @@ const About = () => {
           <div className="space-y-6">
             <p className="text-lg text-gray-300 leading-relaxed">
               I am a passionate AI/ML researcher and engineer pursuing B.Tech in Electronics and Communication Engineering 
-              at Heritage Institute of Technology with a GPA of 9.67. My expertise spans across Computer Vision, 
+              at Heritage Institute of Technology with a GPA of 9.71. My expertise spans across Computer Vision, 
               Deep Learning, and Generative AI.
             </p>
             <p className="text-lg text-gray-300 leading-relaxed">

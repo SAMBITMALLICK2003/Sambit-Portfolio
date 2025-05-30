@@ -1,27 +1,35 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { useState, useEffect } from 'react';
+import { Toaster } from '@/components/ui/toaster';
+import Particles from './components/Particles';
+import { setStaticFavicon } from './utils/staticFavicon';
+import Index from '@/pages/Index';
+import './App.css';
 
-const queryClient = new QueryClient();
+function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+  useEffect(() => {
+    // Set custom favicon when app loads
+    setStaticFavicon();
+  }, []);
+
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-x-hidden">
+      {/* Particle Background - Reduced density on mobile */}
+      <Particles 
+        density={window.innerWidth < 768 ? 30 : 60}
+        speed={0.3}
+        colors={['#06b6d4', '#8b5cf6', '#3b82f6', '#06b6d4']}
+        interactive={window.innerWidth >= 768}
+      />
+      
+      {/* Main Content */}
+      <div className="relative z-10 w-full overflow-x-hidden">
+        <Index />
+      </div>
       <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </div>
+  );
+}
 
 export default App;

@@ -15,13 +15,13 @@ const Awards = () => {
   const achievements = [
     {
       title: 'Academic Excellence',
-      description: 'Maintaining GPA of 9.67 in B.Tech ECE',
+      description: 'Maintaining GPA of 9.71 in B.Tech ECE',
       icon: Star,
       color: 'from-cyan-400 to-blue-500'
     },
     {
       title: 'Research Impact',
-      description: '6+ publications in IEEE & Springer',
+      description: '5+ publications in IEEE & Springer',
       icon: Award,
       color: 'from-purple-400 to-pink-500'
     },
@@ -112,7 +112,7 @@ const Awards = () => {
             <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 backdrop-blur-sm border border-gray-700">
               <h4 className="text-xl font-bold text-cyan-400 mb-2">B.Tech in Electronics and Communication Engineering</h4>
               <p className="text-white font-semibold mb-1">Heritage Institute of Technology, Kolkata</p>
-              <p className="text-gray-400 mb-3">Expected 2025 • GPA: 9.67</p>
+              <p className="text-gray-400 mb-3">Expected 2025 • GPA: 9.71</p>
             </div>
             
             <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 backdrop-blur-sm border border-gray-700">

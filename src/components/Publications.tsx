@@ -1,4 +1,3 @@
-
 import { ExternalLink, Calendar, Users } from 'lucide-react';
 
 const Publications = () => {
@@ -96,7 +95,8 @@ const Publications = () => {
                   )}
                   {pub.link === '#' && (
                     <span className="inline-flex items-center px-6 py-3 bg-gray-600 text-gray-300 rounded-lg font-semibold">
-                      Published
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      Coming Soon
                     </span>
                   )}
                 </div>
@@ -110,7 +110,7 @@ const Publications = () => {
             <h3 className="text-2xl font-bold text-white mb-4">Research Impact</h3>
             <div className="grid md:grid-cols-3 gap-8">
               <div>
-                <div className="text-3xl font-bold text-cyan-400 mb-2">6+</div>
+                <div className="text-3xl font-bold text-cyan-400 mb-2">5+</div>
                 <div className="text-gray-400">Publications</div>
               </div>
               <div>

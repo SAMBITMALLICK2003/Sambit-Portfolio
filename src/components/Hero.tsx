@@ -1,10 +1,26 @@
+import { ChevronDown, Sparkles, Bot, Download } from 'lucide-react';
+import FloatingParticles from './FloatingParticles';
+import TypingAnimation from './TypingAnimation';
 
-import { useState } from 'react';
-import { ChevronDown, Sparkles, Bot } from 'lucide-react';
-import AIAssistant from './AIAssistant';
+interface HeroProps {
+  onOpenChat: () => void;
+}
 
-const Hero = () => {
-  const [showAIChat, setShowAIChat] = useState(false);
+const Hero = ({ onOpenChat }: HeroProps) => {
+  const handleResumeDownload = () => {
+    // You can replace this URL with the actual path to Sambit's resume
+    const resumeUrl = '/resume/Sambit_Mallick_Resume.pdf';
+    const link = document.createElement('a');
+    link.href = resumeUrl;
+    link.download = 'Sambit_Mallick_Resume.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleCollaborate = () => {
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
@@ -16,6 +32,12 @@ const Hero = () => {
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
         }}
       ></div>
+      
+      {/* Floating Particles */}
+      <FloatingParticles 
+        count={15}
+        colors={['#06b6d4', '#8b5cf6', '#3b82f6', '#fbbf24']}
+      />
       
       {/* Floating AI Elements */}
       <div className="absolute top-1/4 left-10 animate-bounce delay-1000">
@@ -34,20 +56,25 @@ const Hero = () => {
         <div className="mb-8 animate-fade-in">
           <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full border border-cyan-400/30 backdrop-blur-sm mb-6">
             <Bot className="w-5 h-5 text-cyan-400 mr-3" />
-            <span className="text-cyan-400 font-semibold">Sam AI Assistant</span>
+            <span className="text-cyan-400 font-bold">Sam AI Assistant</span>
             <div className="w-2 h-2 bg-green-400 rounded-full ml-3 animate-pulse"></div>
           </div>
         </div>
 
-        <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 animate-slide-up">
+        <h1 className="text-6xl md:text-8xl font-black text-white mb-6 animate-slide-up">
           Sambit Mallick
         </h1>
         
-        <div className="text-2xl md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 mb-8 animate-slide-up delay-200">
-          AI/ML Researcher & Engineer
+        <div className="text-2xl md:text-3xl mb-8 animate-slide-up delay-200 h-12 flex items-center justify-center">
+          <TypingAnimation 
+            text="AI/ML Researcher & Engineer"
+            speed={700}
+            delay={500}
+            className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 font-bold"
+          />
         </div>
         
-        <p className="text-xl text-gray-400 mb-12 max-w-3xl mx-auto leading-relaxed animate-slide-up delay-300">
+        <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed animate-slide-up delay-300 font-semibold">
           Bridging cutting-edge AI research with real-world applications. 
           From lunar crater detection at ISRO to quantum-classical ensemble methods.
         </p>
@@ -56,16 +83,23 @@ const Hero = () => {
         <div className="flex flex-wrap justify-center gap-4 mb-16 animate-slide-up delay-400">
           <a
             href="#research-impact"
-            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-semibold shadow-lg hover:shadow-cyan-500/25"
+            className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-bold shadow-lg hover:shadow-cyan-500/25"
           >
             Explore My Research
           </a>
-          <a
-            href="#contact"
-            className="px-8 py-4 bg-transparent border-2 border-cyan-400 text-cyan-400 rounded-lg hover:bg-cyan-400 hover:text-white transition-all duration-200 font-semibold"
+          <button
+            onClick={handleCollaborate}
+            className="px-8 py-4 bg-transparent border-2 border-cyan-400 text-cyan-400 rounded-lg hover:bg-cyan-400 hover:text-white transition-all duration-200 font-bold"
           >
-            Let's Collaborate
-          </a>
+            Collaborate
+          </button>
+          <button
+            onClick={handleResumeDownload}
+            className="flex items-center space-x-2 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:scale-105 transition-transform duration-200 font-bold shadow-lg hover:shadow-green-500/25"
+          >
+            <Download className="w-5 h-5" />
+            <span>Resume</span>
+          </button>
         </div>
 
         {/* Scroll Indicator */}
@@ -73,9 +107,6 @@ const Hero = () => {
           <ChevronDown className="w-8 h-8 text-gray-400" />
         </div>
       </div>
-
-      {/* Conditional AI Chat */}
-      {showAIChat && <AIAssistant />}
     </section>
   );
 };

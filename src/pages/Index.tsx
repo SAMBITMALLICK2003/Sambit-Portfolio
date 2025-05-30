@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import ResearchImpact from '@/components/ResearchImpact';
@@ -10,41 +9,87 @@ import Publications from '@/components/Publications';
 import Awards from '@/components/Awards';
 import Contact from '@/components/Contact';
 import AIGuide from '@/components/AIGuide';
-import AIAssistant from '@/components/AIAssistant';
-import { Bot } from 'lucide-react';
+import AIAssistant, { AIAssistantRef } from '@/components/AIAssistant';
+import ChatBanner from '@/components/ChatBanner';
 
 const Index = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const aiAssistantRef = useRef<AIAssistantRef>(null);
+
+  const handleSearchQuery = (query: string) => {
+    console.log('Search query received in Index:', query);
+    setSearchQuery(query);
+    // Force the AI assistant to open and process the query
+    if (aiAssistantRef.current) {
+      aiAssistantRef.current.openChat();
+      // Small delay to ensure the chat is open before sending message
+      setTimeout(() => {
+        if (aiAssistantRef.current) {
+          aiAssistantRef.current.sendMessage(query);
+        }
+      }, 300);
+    }
+  };
+
+  const handleSearchQueryProcessed = () => {
+    console.log('Search query processed, clearing...');
+    setSearchQuery('');
+  };
+
+  const handleOpenChat = () => {
+    console.log('Opening chat from Index...', aiAssistantRef.current);
+    if (aiAssistantRef.current) {
+      aiAssistantRef.current.openChat();
+    } else {
+      console.error('AI Assistant ref is null - component may not be mounted');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <Header isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <Header 
+        isMenuOpen={isMenuOpen} 
+        setIsMenuOpen={setIsMenuOpen}
+        onSearchQuery={handleSearchQuery}
+        onOpenChat={handleOpenChat}
+      />
       
-      {/* AI Assistant Toggle Button */}
-      <div className="fixed top-24 right-6 z-40">
-        <button
-          onClick={() => {
-            // This will be handled by the AIAssistant component
-            console.log('Toggle AI Assistant');
-          }}
-          className="bg-gradient-to-r from-cyan-500/20 to-purple-500/20 backdrop-blur-sm border border-cyan-400/30 rounded-full p-3 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-cyan-400/25"
-        >
-          <Bot className="w-5 h-5 text-cyan-400" />
-        </button>
-      </div>
-
       <main className="relative">
-        <Hero />
+        <div id="hero">
+          <Hero onOpenChat={handleOpenChat} />
+        </div>
         <ResearchImpact />
-        <About />
-        <Experience />
-        <Projects />
-        <Publications />
-        <Awards />
-        <Contact />
+        <div id="about">
+          <About />
+        </div>
+        <div id="experience">
+          <Experience />
+        </div>
+        <div id="projects">
+          <Projects />
+        </div>
+        <div id="publications">
+          <Publications />
+        </div>
+        <div id="awards">
+          <Awards />
+        </div>
+        <div id="contact">
+          <Contact />
+        </div>
       </main>
+
+      {/* AI Components */}
       <AIGuide />
-      <AIAssistant />
+      <ChatBanner onOpenChat={handleOpenChat} />
+      
+      {/* AI Assistant - This should always be rendered */}
+      <AIAssistant 
+        ref={aiAssistantRef}
+        searchQuery={searchQuery}
+        onSearchQueryProcessed={handleSearchQueryProcessed}
+      />
     </div>
   );
 };
