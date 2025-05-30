@@ -50,18 +50,6 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7b88b711-02b8-431f-a8a0-ae48c34dfeb1) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
-
 # AI Vision Nexus Portfolio
 
 A modern, interactive portfolio website showcasing AI/ML research, projects, and achievements. Built with cutting-edge web technologies and featuring an AI-powered assistant for enhanced user interaction.
