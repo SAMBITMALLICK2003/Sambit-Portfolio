@@ -1,8 +1,8 @@
-# Welcome to your Lovable project
+# Welcome to my portfolio setup
 
 ## Project info
 
-**URL**: [https://lovable.dev/projects/7b88b711-02b8-431f-a8a0-ae48c34dfeb1](https://sambitmallickportfolio.netlify.app/)
+**URL**: [Deployed Link](https://sambitmallickportfolio.netlify.app/)
 
 **Use your preferred IDE**
 
