@@ -2,17 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/7b88b711-02b8-431f-a8a0-ae48c34dfeb1
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/7b88b711-02b8-431f-a8a0-ae48c34dfeb1) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
+**URL**: [https://lovable.dev/projects/7b88b711-02b8-431f-a8a0-ae48c34dfeb1](https://sambitmallickportfolio.netlify.app/)
 
 **Use your preferred IDE**
 
